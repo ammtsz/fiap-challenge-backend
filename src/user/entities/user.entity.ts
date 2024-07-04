@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IUser } from "./models/user.interface";
+import { Post } from "src/posts/entities/posts.entity";
 
 @Entity()
 export class User implements IUser {
@@ -7,27 +8,26 @@ export class User implements IUser {
   id?: number
 
   @Column({
-    name: 'username',
     type: 'varchar',
   })
   username: string;
   
   @Column({
-    name: 'email',
     type: 'varchar',
   })
   email: string;
   
   @Column({
-    name: 'password',
     type: 'varchar',
   })
   password: string;
   
   @Column({
-    name: 'role',
     type: 'varchar',
     enum: ['teacher', 'student']
   })
   role: string;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 }
