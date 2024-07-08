@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from '../services/user.service';
-import { UserRepository } from '../repositories/user.repository';
-import { UserPGRepository } from '../repositories/pg/user.pg.repository';
 
 
 describe('UserController', () => {
