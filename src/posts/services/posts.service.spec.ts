@@ -48,7 +48,7 @@ describe('PostsService', () => {
     expect(mockPostsRepository.findAll).toHaveBeenCalled();
     expect(result).toBe(postsList);
   });
-  
+
   it('should return all posts when findAllAdmin() called', () => {
     jest.spyOn(mockPostsRepository, 'findAllAdmin').mockReturnValue(postsList);
     const result = service.findAll();
