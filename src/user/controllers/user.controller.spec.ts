@@ -2,19 +2,74 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from '../services/user.service';
 
+
 describe('UserController', () => {
-  let controller: UserController;
+  let userController: UserController;
+  let email: string;
+  const dto = {
+    username: "danilo",
+    email: "danilo@mail.com ",
+    password: "senha",
+    role: "professor"
+  }
+
+  const mockUserService = {
+    create: jest.fn(dto => {
+      return
+    }),
+    findOne: jest.fn(email => {
+      return {
+        ...dto,
+        email
+      }
+    }),
+    update: jest.fn((email, dto) => {
+      return
+    }),
+    remove: jest.fn((email) => {
+      return
+    })
+  };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+      const app: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [UserService],
-    }).compile();
+    })
+      .overrideProvider(UserService)
+      .useValue(mockUserService)
+      .compile();
 
-    controller = module.get<UserController>(UserController);
+    userController = app.get<UserController>(UserController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+
+  it('UserController should be defined', async () => {
+    expect(userController).toBeDefined();
   });
+
+  it('create() should create a new user and return void', () => {
+    expect(userController.create(dto)).toBeUndefined();
+    expect(mockUserService.create).toHaveBeenCalledWith(dto);
+  })
+
+  it('findOne() should return a valid User dto', () => {
+    expect(userController.findOne(email)).toEqual({
+      ...dto,
+      email
+    })
+    expect(mockUserService.findOne).toHaveBeenCalledWith(email);
+  })
+
+  it('update() should update data from user email and return void', () => {
+    expect(userController.update(email, dto)).toBeUndefined();
+    expect(mockUserService.update).toHaveBeenCalledWith(email, dto);
+  })
+
+  it('remove() should delete data from user email and return void', () => {
+    expect(userController.remove(email)).toBeUndefined();
+    expect(mockUserService.remove).toHaveBeenCalledWith(email);
+  })
+
+
 });
