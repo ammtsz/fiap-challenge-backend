@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
 import { PostsService } from '../services/posts.service';
 import { IPost } from '../entities/models/posts.interface';
-import { mock } from 'node:test';
-import { single } from 'rxjs';
 
 describe('PostsController', () => {
   let controller: PostsController;

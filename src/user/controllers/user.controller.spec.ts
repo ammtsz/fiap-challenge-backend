@@ -20,7 +20,7 @@ describe('UserController', () => {
     findOne: jest.fn(email => {
       return {
         ...dto,
-        email: email
+        email
       }
     }),
     update: jest.fn((email, dto) => {
