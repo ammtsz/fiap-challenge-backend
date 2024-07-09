@@ -56,7 +56,7 @@ describe('UserController', () => {
   it('findOne() should return a valid User dto', () => {
     expect(userController.findOne(email)).toEqual({
       ...dto,
-      email: email
+      email
     })
     expect(mockUserService.findOne).toHaveBeenCalledWith(email);
   })
