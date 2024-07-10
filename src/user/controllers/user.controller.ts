@@ -3,8 +3,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { UserService } from '../services/user.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { DuplicateRecordException } from 'src/filters/duplicate-record-exception.filter';
-import { NotFoundError } from 'rxjs';
-import { NotFoundExceptionFilter } from 'src/filters/not-found-exception.filter';
 
 @Controller('user')
 export class UserController {
@@ -12,8 +10,8 @@ export class UserController {
 
   @Post()
   async create(@Body() user: CreateUserDto) {
-    const isExistUser = await this.userService.findOne(user.email);
-    if(isExistUser) {
+    const isDuplicatedUser = await this.userService.findOne(user.email);
+    if (isDuplicatedUser) {
       throw new DuplicateRecordException();
     }
     this.userService.create(user);
@@ -22,8 +20,9 @@ export class UserController {
 
   @Get()
   async findOne(@Query('email') email: string) {
-    if (await this.userService.findOne(email)) {
-      return this.userService.findOne(email);
+    const user = await this.userService.findOne(email);
+    if (user) {
+      return user;
     } else {
       return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
     }
@@ -31,8 +30,9 @@ export class UserController {
 
   @Patch()
   async update(@Query('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    if(updateUserDto && await this.userService.findOne(email)) {
-      const isExistUser = await this.userService.findOne(updateUserDto.email);
+    const isValidUser = await this.userService.findOne(email);
+    const isExistUser = await this.userService.findOne(updateUserDto.email);
+    if (updateUserDto && email && isValidUser) {
       if(isExistUser) {
         throw new DuplicateRecordException();
       }  
@@ -44,7 +44,13 @@ export class UserController {
   }
 
   @Delete()
-  remove(@Query('email') email: string) {
-    return this.userService.remove(email);
+  async remove(@Query('email') email: string) {
+    const isValidUser = await this.userService.findOne(email);
+    if (email && isValidUser) {
+      this.userService.remove(email);
+      return 'Usuário deletado com sucesso!'
+    } else {
+      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+    }
   }
 }
