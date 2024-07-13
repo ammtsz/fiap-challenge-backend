@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Delete, Query, Put, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Query, Put, Param, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
@@ -8,38 +8,74 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  async findAll() {
+    try {
+      return await this.postsService.findAll();
+    } catch (error) {
+        throw new NotFoundException(error); 
+    }
   }
 
   @Get('admin')
-  findAllAdmin() {
-    return this.postsService.findAll();
+  async findAllAdmin() {
+    try {
+      return await this.postsService.findAll();
+    } catch (error) {
+        throw new NotFoundException(error); 
+    }
   }
 
   @Get('search')
-  filter(@Query('term') term: string) {
-    return this.postsService.filter(term);
+  async filter(@Query('term') term: string) {
+    try {
+      return await this.postsService.filter(term);
+    } catch (error) {
+        throw new NotFoundException(error); 
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.postsService.findOne(id);
+    } catch (error) {
+        throw new NotFoundException(error);
+    }
   }
 
   @Post()
-  create(@Body() post: CreatePostDto) {
-    return this.postsService.create(post);
+  async create(@Body() post: CreatePostDto) {
+    try {
+      await this.postsService.create(post);
+      return 'Post criado com sucesso!'
+    } catch (error) {
+        throw new BadRequestException(error);
+    }
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    try {
+      await this.postsService.update(id, updatePostDto);
+      return 'Post atualizado com sucesso!'
+    } catch (error) {
+        throw new BadRequestException(error);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  async remove(@Param('id') id: string) {
+    const isValidPost = await this.postsService.findOne(id)
+    if(isValidPost) {
+      try {
+        await this.postsService.remove(id);
+        return 'Post excluído com sucesso!'
+      } catch (error) {
+          throw new BadRequestException(error);
+      }
+    } else {
+      throw new NotFoundException();
+    }
   }
 
 }
