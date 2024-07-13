@@ -55,17 +55,22 @@ export class PostsController {
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    try {
-      await this.postsService.update(id, updatePostDto);
-      return 'Post atualizado com sucesso!'
-    } catch (error) {
-        throw new BadRequestException(error);
+    const isValidPost = await this.postsService.findOne(id);
+    if(isValidPost) {
+      try {
+        await this.postsService.update(id, updatePostDto);
+        return 'Post atualizado com sucesso!'
+      } catch (error) {
+          throw new BadRequestException(error);
+      }
+    } else {
+      throw new NotFoundException();
     }
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const isValidPost = await this.postsService.findOne(id)
+    const isValidPost = await this.postsService.findOne(id);
     if(isValidPost) {
       try {
         await this.postsService.remove(id);
@@ -77,5 +82,4 @@ export class PostsController {
       throw new NotFoundException();
     }
   }
-
 }
