@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Delete, Query, Put, Param, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Query,
+  Put,
+  Param,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
@@ -8,38 +20,38 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  async findAll() {
+  findAll() {
     try {
-      return await this.postsService.findAll();
+      return this.postsService.findAll();
     } catch (error) {
-        throw new NotFoundException(error); 
+      throw new InternalServerErrorException(error);
     }
   }
 
   @Get('admin')
-  async findAllAdmin() {
+  findAllAdmin() {
     try {
-      return await this.postsService.findAll();
+      return this.postsService.findAll();
     } catch (error) {
-        throw new NotFoundException(error); 
+      throw new InternalServerErrorException(error);
     }
   }
 
   @Get('search')
-  async filter(@Query('term') term: string) {
+  filter(@Query('term') term: string) {
     try {
-      return await this.postsService.filter(term);
+      return this.postsService.filter(term);
     } catch (error) {
-        throw new NotFoundException(error); 
+      throw new InternalServerErrorException(error);
     }
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     try {
-      return await this.postsService.findOne(id);
+      return this.postsService.findOne(id);
     } catch (error) {
-        throw new NotFoundException(error);
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -47,39 +59,39 @@ export class PostsController {
   async create(@Body() post: CreatePostDto) {
     try {
       await this.postsService.create(post);
-      return 'Post criado com sucesso!'
+      return 'Post criado com sucesso!';
     } catch (error) {
-        throw new BadRequestException(error);
+      throw new BadRequestException(error);
     }
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    const isValidPost = await this.postsService.findOne(id);
-    if(isValidPost) {
-      try {
+    try {
+      const isValidPost = await this.postsService.findOne(id);
+      if (isValidPost) {
         await this.postsService.update(id, updatePostDto);
-        return 'Post atualizado com sucesso!'
-      } catch (error) {
-          throw new BadRequestException(error);
+        return 'Post atualizado com sucesso!';
+      } else {
+          throw new NotFoundException();
       }
-    } else {
-      throw new NotFoundException();
+    } catch (error) {
+        throw new InternalServerErrorException(error);
     }
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const isValidPost = await this.postsService.findOne(id);
-    if(isValidPost) {
-      try {
+    try {
+      const isValidPost = await this.postsService.findOne(id);
+      if (isValidPost) {
         await this.postsService.remove(id);
-        return 'Post excluído com sucesso!'
-      } catch (error) {
-          throw new BadRequestException(error);
+        return 'Post excluído com sucesso!';
+      } else {
+          throw new NotFoundException();
       }
-    } else {
-      throw new NotFoundException();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
   }
 }
