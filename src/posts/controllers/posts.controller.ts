@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Delete, Query, Put, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Query,
+  Put,
+  Param,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
@@ -9,37 +21,77 @@ export class PostsController {
 
   @Get()
   findAll() {
-    return this.postsService.findAll();
+    try {
+      return this.postsService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Get('admin')
   findAllAdmin() {
-    return this.postsService.findAll();
+    try {
+      return this.postsService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Get('search')
   filter(@Query('term') term: string) {
-    return this.postsService.filter(term);
+    try {
+      return this.postsService.filter(term);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+    try {
+      return this.postsService.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Post()
-  create(@Body() post: CreatePostDto) {
-    return this.postsService.create(post);
+  async create(@Body() post: CreatePostDto) {
+    try {
+      await this.postsService.create(post);
+      return 'Post criado com sucesso!';
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    try {
+      const isValidPost = await this.postsService.findOne(id);
+      if (isValidPost) {
+        await this.postsService.update(id, updatePostDto);
+        return 'Post atualizado com sucesso!';
+      } else {
+          throw new NotFoundException();
+      }
+    } catch (error) {
+        throw new InternalServerErrorException(error);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  async remove(@Param('id') id: string) {
+    try {
+      const isValidPost = await this.postsService.findOne(id);
+      if (isValidPost) {
+        await this.postsService.remove(id);
+        return 'Post excluído com sucesso!';
+      } else {
+          throw new NotFoundException();
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
-
 }
