@@ -4,6 +4,7 @@ import { DuplicateRecordException } from 'src/filters/duplicate-record-exception
 import { CreateUserDto, createUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto, updateUserDto } from '../dto/update-user.dto';
 import { ZodValidationPipe } from "src/shared/pipe/zod-validation.pipe";
+import { hashSync } from 'bcryptjs';
 
 @Controller('user')
 export class UserController {
@@ -11,12 +12,17 @@ export class UserController {
 
   @UsePipes(new ZodValidationPipe(createUserDto))
   @Post()
-  async create(@Body() user: CreateUserDto) {
-    const isDuplicatedUser = await this.userService.findOne(user.email);
+  async create(@Body() {email, password, ...user}: CreateUserDto) {
+    const isDuplicatedUser = await this.userService.findOne(email);
     if (isDuplicatedUser) {
       throw new DuplicateRecordException();
     }
-    this.userService.create(user);
+
+    this.userService.create({
+      email,
+      password: hashSync(password, 8),
+      ...user,
+    });
     return 'Usuário criado com sucesso!'
   }
 
