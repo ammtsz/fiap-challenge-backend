@@ -1,22 +1,20 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
-import { UserService } from 'src/user/services/user.service';
 import { AuthDto, authDto } from '../dto/auth.dto';
-import { compareSync } from 'bcryptjs';
+import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post()
-  async login(@Body(new ZodValidationPipe(authDto)) {email, password}: AuthDto) {
-    const user = await this.userService.findOne(email);
-    const isValidPassword = compareSync(password, user.password);
-
-    if (isValidPassword) {
-      return 'Login realizado com sucesso!'
+  async login(@Body(new ZodValidationPipe(authDto)) credentials: AuthDto) {
+    const { isValidPassword, user } = await this.authService.validateUser(credentials)
+    
+    if (isValidPassword && user) {
+      return this.authService.login(user);
     } else {
-      return 'Email ou senha inválidos'
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
   }
 }

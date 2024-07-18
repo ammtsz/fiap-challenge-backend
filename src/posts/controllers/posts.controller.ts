@@ -11,13 +11,19 @@ import {
   NotFoundException,
   InternalServerErrorException,
   UsePipes,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto, createPostDto } from '../dto/create-post.dto';
 import { UpdatePostDto, updatePostDto }  from '../dto/update-post.dto';
 import { ZodValidationPipe } from "src/shared/pipe/zod-validation.pipe";
+import { AuthGuard } from 'src/shared/guards/auth.guard';
+import { Roles } from 'src/shared/decorators/role.decorator';
+import { Role } from 'src/shared/enums/role.enum';
+import { RoleGuard } from 'src/shared/guards/role.guard';
 
-@Controller('posts')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
@@ -30,6 +36,7 @@ export class PostsController {
     }
   }
 
+  @Roles(Role.Admin)
   @Get('admin')
   findAllAdmin() {
     try {
@@ -57,6 +64,7 @@ export class PostsController {
     }
   }
 
+  @Roles(Role.Admin, Role.Teacher)
   @UsePipes(new ZodValidationPipe(createPostDto))
   @Post()
   async create(@Body() post: CreatePostDto) {
@@ -68,6 +76,7 @@ export class PostsController {
     }
   }
 
+  @Roles(Role.Admin, Role.Teacher)
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -90,6 +99,7 @@ export class PostsController {
     }
   }
 
+  @Roles(Role.Admin, Role.Teacher)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
