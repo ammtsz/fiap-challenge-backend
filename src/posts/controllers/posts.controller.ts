@@ -10,10 +10,12 @@ import {
   BadRequestException,
   NotFoundException,
   InternalServerErrorException,
+  UsePipes,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
-import { CreatePostDto } from '../dto/create-post.dto';
-import { UpdatePostDto } from '../dto/update-post.dto';
+import { CreatePostDto, createPostDto } from '../dto/create-post.dto';
+import { UpdatePostDto, updatePostDto }  from '../dto/update-post.dto';
+import { ZodValidationPipe } from "src/shared/pipe/zod-validation.pipe";
 
 @Controller('posts')
 export class PostsController {
@@ -55,6 +57,7 @@ export class PostsController {
     }
   }
 
+  @UsePipes(new ZodValidationPipe(createPostDto))
   @Post()
   async create(@Body() post: CreatePostDto) {
     try {
@@ -66,7 +69,14 @@ export class PostsController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updatePostDto)) updatePostDto: UpdatePostDto
+  ) {
+    if(Object.keys(updatePostDto).length === 0) {
+      throw new BadRequestException('Erro de validação');
+    }
+
     try {
       const isValidPost = await this.postsService.findOne(id);
       if (isValidPost) {
