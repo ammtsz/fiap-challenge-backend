@@ -83,7 +83,7 @@ export class PostsController {
     @Body(new ZodValidationPipe(updatePostDto)) updatePostDto: UpdatePostDto
   ) {
     if(Object.keys(updatePostDto).length === 0) {
-      throw new BadRequestException('Erro de validação');
+      throw new BadRequestException('Nenhum dado a ser atualizado. Confira as propriedades informadas.');
     }
 
     try {
