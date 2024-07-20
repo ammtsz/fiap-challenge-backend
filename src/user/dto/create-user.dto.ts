@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-export const CreateUserSchema = z.object({
+export const createUserDto = z.object({
   username: z.string(),
   email: z.string(),
   password: z.string(),
   role: z.string(),
 })
 
-export type CreateUserDto = z.infer<typeof CreateUserSchema>
+export type CreateUserDto = z.infer<typeof createUserDto>
