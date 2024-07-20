@@ -1,10 +1,10 @@
-import { IUser } from "src/user/entities/models/user.interface";
+import { IUser } from "../../../user/entities/models/user.interface";
 import { UserRepository } from "../user.repository";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../../../user/entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "src/user/dto/create-user.dto";
-import { UpdateUserDto } from "src/user/dto/update-user.dto";
+import { CreateUserDto } from "../../../user/dto/create-user.dto";
+import { UpdateUserDto } from "../../../user/dto/update-user.dto";
 
 export class UserPGRepository implements UserRepository {
   constructor(

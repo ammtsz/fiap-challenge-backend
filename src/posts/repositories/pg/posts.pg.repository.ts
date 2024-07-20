@@ -1,10 +1,10 @@
-import { IPost } from "src/posts/entities/models/posts.interface";
+import { IPost } from "../../../posts/entities/models/posts.interface";
 import { PostsRepository } from "../posts.repository";
-import { Post } from "src/posts/entities/posts.entity";
+import { Post } from "../../../posts/entities/posts.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreatePostDto } from "src/posts/dto/create-post.dto";
-import { UpdatePostDto } from "src/posts/dto/update-post.dto";
+import { CreatePostDto } from "../../../posts/dto/create-post.dto";
+import { UpdatePostDto } from "../../../posts/dto/update-post.dto";
 
 export class PostsPGRepository implements PostsRepository {
   constructor(
