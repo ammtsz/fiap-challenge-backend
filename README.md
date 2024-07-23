@@ -88,6 +88,11 @@ POSTGRES_PASSWORD=docker
 POSTGRES_DB=challenge
 JWT_SECRET=mysecret
 ```
+### Instalar os pacotes necessários
+
+```bash
+$ npm install
+```
 
 Para iniciar a aplicação, basta executar:
 
@@ -102,12 +107,6 @@ Após inicialização, a aplicação estará recebendo requisições na porta 30
 Caso queira executar a aplicação apenas, os seguintes passos devem ser seguidos:
 
 - Criar arquivo `.env` seguindo o exemplo de `.env.example`
-
-### Instalar os pacotes necessários
-
-```bash
-$ npm install
-```
 
 ### Subir uma instância ou ter o banco de dados PostgreSQL rodando localmente. 
 
