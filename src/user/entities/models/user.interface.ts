@@ -1,4 +1,4 @@
-import { Post } from "src/posts/entities/posts.entity"
+import { Post } from "../../../posts/entities/posts.entity"
 
 export interface IUser {
   id?: number

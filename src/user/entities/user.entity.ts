@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IUser } from "./models/user.interface";
-import { Post } from "src/posts/entities/posts.entity";
+import { Post } from "../../posts/entities/posts.entity";
 
 @Entity()
 export class User implements IUser {

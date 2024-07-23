@@ -16,21 +16,22 @@ import {
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto, createPostDto } from '../dto/create-post.dto';
 import { UpdatePostDto, updatePostDto }  from '../dto/update-post.dto';
-import { ZodValidationPipe } from "src/shared/pipe/zod-validation.pipe";
-import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { Roles } from 'src/shared/decorators/role.decorator';
-import { Role } from 'src/shared/enums/role.enum';
-import { RoleGuard } from 'src/shared/guards/role.guard';
+import { ZodValidationPipe } from "../../shared/pipe/zod-validation.pipe";
+import { AuthGuard } from '../../shared/guards/auth.guard';
+import { Roles } from '../../shared/decorators/role.decorator';
+import { Role } from '../../shared/enums/role.enum';
+import { RoleGuard } from '../../shared/guards/role.guard';
 
-  @UseGuards(AuthGuard, RoleGuard)
-  @Controller('posts')
+@UseGuards(AuthGuard, RoleGuard)
+@Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     try {
-      return this.postsService.findAll();
+      const posts = await this.postsService.findAll();
+      return posts;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -38,27 +39,30 @@ export class PostsController {
 
   @Roles(Role.Admin)
   @Get('admin')
-  findAllAdmin() {
+  async findAllAdmin() {
     try {
-      return this.postsService.findAll();
+      const posts = await this.postsService.findAll();
+      return posts;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
   @Get('search')
-  filter(@Query('term') term: string) {
+  async filter(@Query('term') term: string) {
     try {
-      return this.postsService.filter(term);
+      const posts = await this.postsService.filter(term);
+      return posts;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     try {
-      return this.postsService.findOne(id);
+      const post = await this.postsService.findOne(id);
+      return post
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -72,7 +76,7 @@ export class PostsController {
       await this.postsService.create(post);
       return 'Post criado com sucesso!';
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -87,15 +91,19 @@ export class PostsController {
     }
 
     try {
-      const isValidPost = await this.postsService.findOne(id);
+      const isValidPost = !!(await this.postsService.findOne(id));
       if (isValidPost) {
         await this.postsService.update(id, updatePostDto);
         return 'Post atualizado com sucesso!';
       } else {
-          throw new NotFoundException();
+        throw new NotFoundException();
       }
     } catch (error) {
+      if(error instanceof NotFoundException) {
+        throw new NotFoundException();
+      } else {
         throw new InternalServerErrorException(error);
+      }
     }
   }
 
@@ -103,7 +111,7 @@ export class PostsController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
-      const isValidPost = await this.postsService.findOne(id);
+      const isValidPost = !!(await this.postsService.findOne(id));
       if (isValidPost) {
         await this.postsService.remove(id);
         return 'Post excluído com sucesso!';
@@ -111,7 +119,11 @@ export class PostsController {
           throw new NotFoundException();
       }
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      if(error instanceof NotFoundException) {
+        throw new NotFoundException();
+      } else {
+        throw new InternalServerErrorException(error);
+      }
     }
   }
 }
