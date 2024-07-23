@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { DuplicateRecordException } from '../../filters/duplicate-record-exception.filter';
 import { CreateUserDto, createUserDto } from '../dto/create-user.dto';
@@ -28,11 +28,14 @@ export class UserController {
 
   @Get()
   async findOne(@Query('email') email: string) {
+    if (!email) {
+       throw new BadRequestException('Especifique o e-mail do usuário.')
+    }
     const user = await this.userService.findOne(email);
     if (user) {
       return user;
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      throw new NotFoundException()
     }
   }
 
@@ -59,7 +62,7 @@ export class UserController {
       this.userService.update(email, updateUserDto);
       return 'Usuário atualizado com sucesso!'
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      return 'Usuário inválido ou não encontrado. Verifique os dados fornecidos e tente novamente.'
     }
   }
 
@@ -70,7 +73,7 @@ export class UserController {
       this.userService.remove(email);
       return 'Usuário deletado com sucesso!'
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      return 'Usuário inválido ou não encontrado. Verifique os dados fornecidos e tente novamente.'
     }
   }
 }

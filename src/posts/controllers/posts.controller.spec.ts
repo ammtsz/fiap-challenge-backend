@@ -4,6 +4,7 @@ import { PostsService } from '../services/posts.service';
 import { JwtService } from '@nestjs/jwt';
 import { IPost } from '../entities/models/posts.interface';
 import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
 
 describe('PostsController', () => {
   let postController: PostsController;
@@ -123,6 +124,15 @@ describe('PostsController', () => {
       await expect(result).rejects.toThrow(InternalServerErrorException);
       await expect(result).rejects.toThrow ("Service Error");
     });
+
+    it('should throw QueryFailedError when findOne(postId) called with invalid id format', async () => {
+      jest.spyOn(mockPostsService, 'findOne').mockRejectedValue(new QueryFailedError('', [], Error()));
+
+      const result = postController.findOne('invalid-id');
+
+      await expect(result).rejects.toThrow(BadRequestException);
+      await expect(result).rejects.toThrow ('Formato inválido do ID.');
+    })
   });
 
   describe('create()', () => {
@@ -170,6 +180,15 @@ describe('PostsController', () => {
       jest.spyOn(mockPostsService, 'findOne').mockResolvedValue(null);
       expect(postController.update(postId, {title: dto.title})).rejects.toThrow(NotFoundException);
     });
+
+    it('should throw QueryFailedError when update(postId, dto) called with invalid id format', async () => {
+      jest.spyOn(mockPostsService, 'findOne').mockRejectedValue(new QueryFailedError('', [], Error()));
+
+      const result = postController.update('invalid-id', dto);
+
+      await expect(result).rejects.toThrow(BadRequestException);
+      await expect(result).rejects.toThrow ('Formato inválido do ID.');
+    })
   
   });
 
@@ -195,5 +214,14 @@ describe('PostsController', () => {
       jest.spyOn(mockPostsService, 'findOne').mockResolvedValue(null);
       expect(postController.remove(postId)).rejects.toThrow(NotFoundException);
     });
+
+    it('should throw QueryFailedError when remove(postId) called with invalid id format', async () => {
+      jest.spyOn(mockPostsService, 'findOne').mockRejectedValue(new QueryFailedError('', [], Error()));
+
+      const result = postController.remove('invalid-id');
+
+      await expect(result).rejects.toThrow(BadRequestException);
+      await expect(result).rejects.toThrow ('Formato inválido do ID.');
+    })
   });
 });

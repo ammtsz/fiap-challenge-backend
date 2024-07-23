@@ -21,6 +21,7 @@ import { AuthGuard } from '../../shared/guards/auth.guard';
 import { Roles } from '../../shared/decorators/role.decorator';
 import { Role } from '../../shared/enums/role.enum';
 import { RoleGuard } from '../../shared/guards/role.guard';
+import { QueryFailedError } from 'typeorm';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('posts')
@@ -64,7 +65,11 @@ export class PostsController {
       const post = await this.postsService.findOne(id);
       return post
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      if(error instanceof QueryFailedError) {
+        throw new BadRequestException('Formato inválido do ID.');
+      } else {
+        throw new InternalServerErrorException(error);
+      }
     }
   }
 
@@ -99,7 +104,9 @@ export class PostsController {
         throw new NotFoundException();
       }
     } catch (error) {
-      if(error instanceof NotFoundException) {
+      if(error instanceof QueryFailedError) {
+        throw new BadRequestException('Formato inválido do ID.');
+      } else if(error instanceof NotFoundException) {
         throw new NotFoundException();
       } else {
         throw new InternalServerErrorException(error);
@@ -119,7 +126,9 @@ export class PostsController {
           throw new NotFoundException();
       }
     } catch (error) {
-      if(error instanceof NotFoundException) {
+      if(error instanceof QueryFailedError) {
+        throw new BadRequestException('Formato inválido do ID.');
+      } else if(error instanceof NotFoundException) {
         throw new NotFoundException();
       } else {
         throw new InternalServerErrorException(error);
