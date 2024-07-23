@@ -78,44 +78,52 @@ _Todos os endpoints que modificam dados (POST, PUT, DELETE) devem incluir autent
 
 # Inicializando o projeto
 
-## Docker (Postgres)
+Esta aplicação foi transformada em um container contendo a aplicação em si e o PostgreSQL. Antes de iniciar a aplicação, é preciso criar um arquivo `.env` conforme sugestão em `.env.example`, ou conforme sugestão abaixo, que inclui a parametrização utilizada no docker compose:
+
+```
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=docker
+POSTGRES_PASSWORD=docker
+POSTGRES_DB=challenge
+JWT_SECRET=mysecret
+```
+
+Para iniciar a aplicação, basta executar:
 
 ```bash
-$ docker run -d --name my-postgres -e POSTGRES_PASSWORD=123456 -p 5432:5432 postgres
+$ docker compose up
 ```
 
-## BDeaver (criação de tabelas)
-
-```sql
-create table "user"(
-  id serial primary key,
-  username varchar(255) not null,
-  email varchar(255) not null,
-  password varchar(255) not null,
-  role varchar(255) not null
-);
-
-create table post (
-  id uuid primary key,
-  title varchar(255) not null,
-  content text,
-  date date not null,
-  user_id int not null,
-  foreign key (user_id) references "user" (id) on delete cascade
-);
-```
+Após inicialização, a aplicação estará recebendo requisições na porta 3000.
 
 ## Rodando o Projeto em NestJS
 
+Caso queira executar a aplicação apenas, os seguintes passos devem ser seguidos:
+
 - Criar arquivo `.env` seguindo o exemplo de `.env.example`
 
-### Installation
+### Instalar os pacotes necessários
 
 ```bash
 $ npm install
 ```
 
-### Running the app
+### Subir uma instância ou ter o banco de dados PostgreSQL rodando localmente. 
+
+Se desejar, pode utilizar o docker compose também. Sugerimos o uso do container docker db pois na inicialização ele já implementa o script `init.sql` que cria as tabelas necessárias para a aplicação e adiciona alguns registros de exemplo.
+
+```bash
+$ docker compose up db
+```
+
+### Instalar os pacotes necessários
+
+```bash
+$ npm install
+```
+
+### Rodar a aplicação
 
 ```bash
 # development
