@@ -19,8 +19,8 @@ create table post (
 
 INSERT INTO "user" (username, email, password, role) VALUES ('student1', 'student1@mail.com', 'pass1', 'student');
 INSERT INTO "user" (username, email, password, role) VALUES ('student2', 'student2@mail.com', 'pass2', 'student');
-INSERT INTO "user" (username, email, password, role) VALUES ('professor1', 'professor1@mail.com', 'pass3', 'professor');
-INSERT INTO "user" (username, email, password, role) VALUES ('professor2', 'professor2@mail.com', 'pass4', 'professor');
+INSERT INTO "user" (username, email, password, role) VALUES ('professor1', 'professor1@mail.com', 'pass3', 'teacher');
+INSERT INTO "user" (username, email, password, role) VALUES ('professor2', 'professor2@mail.com', 'pass4', 'teacher');
 
 INSERT INTO post (id, content, user_id, title, date) VALUES ('3ad71df8-57d1-4d94-8473-f7f85aa16c05','Content 1', 3, 'Title 1', now());
 INSERT INTO post (id, content, user_id, title, date) VALUES ('20550b85-a535-4b40-8c92-8a15238d1f7c','Content 2', 4, 'Title 2', now());
