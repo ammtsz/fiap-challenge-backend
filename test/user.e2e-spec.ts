@@ -76,11 +76,11 @@ describe('UserController (e2e)', () => {
     .expect(200)
   });
 
-  // it('[DELETE] /user should return 400 BAD REQUEST if email not provided', async () => {
-  //   return request(app.getHttpServer())
-  //   .delete('/user')
-  //   .expect(400)
-  // })
+  it('[DELETE] /user should return 400 BAD REQUEST if email not provided', async () => {
+    return request(app.getHttpServer())
+    .delete('/user')
+    .expect(400)
+  })
 
   it('[DELETE] /user?email=' + randomEmail + ' should delete user from database', async () => {
     const deleteRequest = await request(app.getHttpServer())
@@ -104,15 +104,15 @@ describe('UserController (e2e)', () => {
     .expect(400)
   });
 
-  // it('[PATCH] /user?email=' + randomEmail + ' should return 404 NOT FOUND if email does not exist', async () => {
-  //   return request(app.getHttpServer())
-  //   .patch('/user?email=' + randomEmail)
-  //   .send({
-  //     "username": randomUser,
-  //     "email": randomEmail,
-  //     "password": "senha",
-  //     "role": "teacher"
-  //   })
-  //   .expect(404)
-  // })
+  it('[PATCH] /user?email=' + randomEmail + ' should return 404 NOT FOUND if email does not exist', async () => {
+    return request(app.getHttpServer())
+    .patch('/user?email=' + randomEmail)
+    .send({
+      "username": randomUser,
+      "email": randomEmail,
+      "password": "senha",
+      "role": "teacher"
+    })
+    .expect(404)
+  })
 });

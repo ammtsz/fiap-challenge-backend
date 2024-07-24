@@ -55,7 +55,7 @@ describe('PostsController (e2e)', () => {
       .expect(404)
   });
 
-  it('[POST] /auth should return 400 if body not provided', () => {
+  it('[POST] /auth should return 400 BAD REQUEST if body not provided', () => {
     return request(app.getHttpServer())
       .post('/auth')
       .expect(400)
