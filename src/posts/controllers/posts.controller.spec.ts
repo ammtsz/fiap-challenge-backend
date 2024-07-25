@@ -17,10 +17,10 @@ describe('PostsController', () => {
     user_id: 1
   }
   
-  let postsList: Promise<IPost[]>;
-  let singlePost: Promise<IPost>;
-  let searchTerms: string;
-  let postId: string;
+  let postsList = [] as IPost[];
+  let singlePost = {} as IPost;
+  let searchTerms = 'searchTerm';
+  let postId = '123';
 
   const mockPostsService = {
     findAll: jest.fn(),
@@ -57,7 +57,7 @@ describe('PostsController', () => {
     it('should return all posts when findAll() called', async () => {
       jest.spyOn(mockPostsService, 'findAll').mockResolvedValue(postsList);
 
-      expect(await postController.findAll()).toBe(postsList);
+      expect(await postController.findAll()).toEqual(postsList);
       expect(mockPostsService.findAll).toHaveBeenCalled();
     });
 
@@ -76,7 +76,7 @@ describe('PostsController', () => {
     it('should return all posts when findAllAdmin() called', async () => {
       jest.spyOn(mockPostsService, 'findAll').mockResolvedValue(postsList);
 
-      expect(await postController.findAllAdmin()).toBe(postsList);
+      expect(await postController.findAllAdmin()).toEqual(postsList);
       expect(mockPostsService.findAll).toHaveBeenCalled();
     });
 
@@ -92,9 +92,9 @@ describe('PostsController', () => {
 
   describe('filter()', () => {
     it('should filter posts with a keyword when filter(searchTerms) called', async () => {
-      jest.spyOn(mockPostsService, 'filter').mockReturnValue(postsList);
+      jest.spyOn(mockPostsService, 'filter').mockResolvedValue(postsList);
 
-      expect(await postController.filter(searchTerms)).toBe(postsList);
+      expect(await postController.filter(searchTerms)).toEqual(postsList);
       expect(mockPostsService.filter).toHaveBeenCalledWith(searchTerms);
     });
 
@@ -110,9 +110,9 @@ describe('PostsController', () => {
 
   describe('findOne()', () => {
     it('should return a post with an id when findOne(postId) called', async () => {
-      jest.spyOn(mockPostsService, 'findOne').mockReturnValue(singlePost);
+      jest.spyOn(mockPostsService, 'findOne').mockResolvedValue(singlePost);
       
-      expect(await postController.findOne(postId)).toBe(singlePost);
+      expect(await postController.findOne(postId)).toEqual(singlePost);
       expect(mockPostsService.findOne).toHaveBeenCalledWith(postId);
     });
 
@@ -137,7 +137,7 @@ describe('PostsController', () => {
 
   describe('create()', () => {
     it('should create a post and return void when create(dto) called', async () => {
-      expect(await postController.create(dto)).toBe('Post criado com sucesso!');
+      expect(await postController.create(dto)).toEqual('Post criado com sucesso!');
       expect(mockPostsService.create).toHaveBeenCalledWith(dto);
     });
 
@@ -155,7 +155,7 @@ describe('PostsController', () => {
     it('should update a post and return void when update(postId, dto) called', async () => {
       jest.spyOn(mockPostsService, 'findOne').mockResolvedValue(dto);
       
-      expect(await postController.update(postId, {title: dto. title})).toBe('Post atualizado com sucesso!');
+      expect(await postController.update(postId, {title: dto. title})).toEqual('Post atualizado com sucesso!');
       expect(mockPostsService.update).toHaveBeenCalledWith(postId, {title: dto. title});
     });
 
@@ -196,7 +196,7 @@ describe('PostsController', () => {
     it('should remove a post and return void when remove(postId) called', async () => {
       jest.spyOn(mockPostsService, 'findOne').mockResolvedValue(dto);
 
-      expect(await postController.remove(postId)).toBe('Post excluído com sucesso!');
+      expect(await postController.remove(postId)).toEqual('Post excluído com sucesso!');
       expect(mockPostsService.remove).toHaveBeenCalledWith(postId);
     });
 

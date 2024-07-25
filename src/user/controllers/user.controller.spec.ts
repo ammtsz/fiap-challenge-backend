@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserController } from './user.controller';
 import { UserService } from '../services/user.service';
 import { DuplicateRecordException } from '../../filters/duplicate-record-exception.filter';
-import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 
 describe('UserController', () => {
@@ -27,8 +27,6 @@ describe('UserController', () => {
   const mockJwtService = {
     sign: jest.fn(() => 'testToken'),
   };
-
-  const notFoundMessage = 'Usuário inválido ou não encontrado. Verifique os dados fornecidos e tente novamente.';
 
   beforeEach(async () => {
       const app: TestingModule = await Test.createTestingModule({
@@ -116,14 +114,19 @@ describe('UserController', () => {
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
 
-    it('should return an error message when update(email, user) called and user is not found', async () => {
+    it('should throw NotFoundException when update(email, user) called and user is not found', async () => {
       jest.spyOn(userService, 'findOne').mockResolvedValue(null);
       
-      await expect(userController.update(dto.email, dto)).resolves.toEqual(notFoundMessage);
+      await expect(userController.update(dto.email, dto)).rejects.toThrow(NotFoundException);
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
 
     it('should throw BadRequestException when update(email, user) called with invalid dto', async () => {
+      await expect(userController.update(dto.email, {})).rejects.toThrow(BadRequestException);
+      expect(mockUserService.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when update(email, user) called without an email', async () => {
       await expect(userController.update(dto.email, {})).rejects.toThrow(BadRequestException);
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
@@ -137,11 +140,16 @@ describe('UserController', () => {
       expect(mockUserService.remove).toHaveBeenCalledWith(dto.email);
     });
 
-    it('should return not found message when remove(email) called and user not found', async () => {
+    it('should throw NotFoundException when remove(email) called and user not found', async () => {
       jest.spyOn(userService, 'findOne').mockResolvedValue(null);
       
-      expect(userController.remove(dto.email)).resolves.toEqual(notFoundMessage);
+      expect(userController.remove(dto.email)).rejects.toThrow(NotFoundException);
       expect(mockUserService.remove).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when remove(email) called without an email', async () => {
+      await expect(userController.remove('')).rejects.toThrow(BadRequestException);
+      expect(mockUserService.update).not.toHaveBeenCalled();
     });
   });
 });
