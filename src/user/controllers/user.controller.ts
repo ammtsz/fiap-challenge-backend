@@ -44,6 +44,8 @@ export class UserController {
     @Query('email') email: string,
     @Body(new ZodValidationPipe(updateUserDto)) updateUserDto: UpdateUserDto
   ) {
+    if(!email) throw new BadRequestException('Especifique o e-mail do usuário.')
+
     if(Object.keys(updateUserDto).length === 0) {
       throw new BadRequestException('Nenhum dado a ser atualizado. Confira as propriedades informadas.');
     }
@@ -62,18 +64,20 @@ export class UserController {
       this.userService.update(email, updateUserDto);
       return 'Usuário atualizado com sucesso!'
     } else {
-      return 'Usuário inválido ou não encontrado. Verifique os dados fornecidos e tente novamente.'
+      throw new NotFoundException()
     }
   }
 
   @Delete()
   async remove(@Query('email') email: string) {
+    if(!email) throw new BadRequestException('Especifique o e-mail do usuário.')
+
     const isValidUser = !!(await this.userService.findOne(email));
-    if (email && isValidUser) {
+    if (isValidUser) {
       this.userService.remove(email);
       return 'Usuário deletado com sucesso!'
     } else {
-      return 'Usuário inválido ou não encontrado. Verifique os dados fornecidos e tente novamente.'
+      throw new NotFoundException()
     }
   }
 }

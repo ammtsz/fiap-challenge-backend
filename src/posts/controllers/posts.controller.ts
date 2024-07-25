@@ -63,10 +63,13 @@ export class PostsController {
   async findOne(@Param('id') id: string) {
     try {
       const post = await this.postsService.findOne(id);
+      if(!post) throw new NotFoundException();
       return post
     } catch (error) {
       if(error instanceof QueryFailedError) {
         throw new BadRequestException('Formato inválido do ID.');
+      } else if(error instanceof NotFoundException) {
+        throw new NotFoundException
       } else {
         throw new InternalServerErrorException(error);
       }
