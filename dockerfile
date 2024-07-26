@@ -4,8 +4,11 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-CMD [ "npm", "run", "start:dev"]
+RUN npm run test
+RUN npm run build
+
+CMD [ "node", "dist/main.js"]
