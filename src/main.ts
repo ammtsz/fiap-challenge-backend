@@ -5,10 +5,21 @@ import { BadRequestExceptionFilter } from './filters/bad-request-exception.filte
 import { NotFoundExceptionFilter } from './filters/not-found-exception.filter';
 import { InternalServerErrorExceptionFilter } from './filters/internal-server-error-exception.filter';
 import { DuplicateRecordExceptionFilter } from './filters/duplicate-record-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('challenge-backend')
+    .setDescription('API for FIAP Challenge Backend')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('swagger-ui', app, document);
+
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // remove propriedades que não estão no DTO.
     forbidNonWhitelisted: true, // lança um erro se propriedades desconhecidas forem passadas.

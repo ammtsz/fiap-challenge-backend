@@ -2,7 +2,9 @@ import { Body, Controller, InternalServerErrorException, Post, UnauthorizedExcep
 import { ZodValidationPipe } from '../../shared/pipe/zod-validation.pipe';
 import { AuthDto, authDto } from '../dto/auth.dto';
 import { AuthService } from '../services/auth.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

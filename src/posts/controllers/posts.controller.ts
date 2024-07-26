@@ -22,7 +22,10 @@ import { Roles } from '../../shared/decorators/role.decorator';
 import { Role } from '../../shared/enums/role.enum';
 import { RoleGuard } from '../../shared/guards/role.guard';
 import { QueryFailedError } from 'typeorm';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('posts')
+@ApiBearerAuth()
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('posts')
 export class PostsController {

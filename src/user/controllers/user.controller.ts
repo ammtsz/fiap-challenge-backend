@@ -5,7 +5,9 @@ import { CreateUserDto, createUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto, updateUserDto } from '../dto/update-user.dto';
 import { ZodValidationPipe } from "../../shared/pipe/zod-validation.pipe";
 import { hashSync } from 'bcryptjs';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
