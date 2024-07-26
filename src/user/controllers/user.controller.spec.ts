@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { UserController } from './user.controller';
 import { UserService } from '../services/user.service';
-import { DuplicateRecordException } from '../../filters/duplicate-record-exception.filter';
+import { DuplicateRecordException } from '../../shared/filters/duplicate-record-exception.filter';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 

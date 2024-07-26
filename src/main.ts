@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { BadRequestExceptionFilter } from './filters/bad-request-exception.filter';
-import { NotFoundExceptionFilter } from './filters/not-found-exception.filter';
-import { InternalServerErrorExceptionFilter } from './filters/internal-server-error-exception.filter';
-import { DuplicateRecordExceptionFilter } from './filters/duplicate-record-exception.filter';
+import { BadRequestExceptionFilter } from './shared/filters/bad-request-exception.filter';
+import { NotFoundExceptionFilter } from './shared/filters/not-found-exception.filter';
+import { InternalServerErrorExceptionFilter } from './shared/filters/internal-server-error-exception.filter';
+import { DuplicateRecordExceptionFilter } from './shared/filters/duplicate-record-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 
