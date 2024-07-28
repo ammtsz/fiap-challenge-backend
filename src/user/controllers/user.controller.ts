@@ -1,8 +1,21 @@
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { DuplicateRecordException } from 'src/filters/duplicate-record-exception.filter';
+import { NotFoundError } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -11,11 +24,14 @@ export class UserController {
   @Post()
   async create(@Body() user: CreateUserDto) {
     const isDuplicatedUser = await this.userService.findOne(user.email);
-    if (isDuplicatedUser) {
+    if (!isDuplicatedUser && user) {
+      this.userService.create(user);
+      return 'Usuário criado com sucesso!';
+    } else if (user && isDuplicatedUser) {
       throw new DuplicateRecordException();
+    } else {
+      throw new InternalServerErrorException();
     }
-    this.userService.create(user);
-    return 'Usuário criado com sucesso!'
   }
 
   @Get()
@@ -24,33 +40,31 @@ export class UserController {
     if (user) {
       return user;
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      throw new NotFoundException();
     }
   }
 
   @Patch()
-  async update(@Query('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    const isValidUser = await this.userService.findOne(email);
-    const isExistUser = await this.userService.findOne(updateUserDto.email);
-    if (updateUserDto && email && isValidUser) {
-      if(isExistUser) {
-        throw new DuplicateRecordException();
-      }  
+  async update(
+    @Query('email') email: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    if ((await this.userService.findOne(email)) && updateUserDto) {
       this.userService.update(email, updateUserDto);
-      return 'Usuário atualizado com sucesso!'
+      return 'Usuário atualizado com sucesso!';
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      throw new NotFoundException();
     }
   }
 
   @Delete()
   async remove(@Query('email') email: string) {
     const isValidUser = await this.userService.findOne(email);
-    if (email && isValidUser) {
-      this.userService.remove(email);
-      return 'Usuário deletado com sucesso!'
+    if (isValidUser) {
+      await this.userService.remove(email);
+      return 'Usuário deletado com sucesso!';
     } else {
-      return 'Ocorreu um erro com a requisição solicitada. Verfique os dados fornecidos e tente novamente.'
+      throw new NotFoundException();
     }
   }
 }
