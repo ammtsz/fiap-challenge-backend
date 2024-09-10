@@ -6,7 +6,7 @@ import { NotFoundExceptionFilter } from './shared/filters/not-found-exception.fi
 import { InternalServerErrorExceptionFilter } from './shared/filters/internal-server-error-exception.filter';
 import { DuplicateRecordExceptionFilter } from './shared/filters/duplicate-record-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +31,15 @@ async function bootstrap() {
     new InternalServerErrorExceptionFilter(),
     new DuplicateRecordExceptionFilter()
   );
+
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    methods: 'GET,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  app.use(cookieParser());
+
   await app.listen(3000);
 }
 bootstrap();

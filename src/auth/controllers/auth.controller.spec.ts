@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -17,6 +18,12 @@ describe('AuthController', () => {
   const mockJwtService = {
     sign: jest.fn(),
   };
+
+  const mockResponse = {
+    cookie: jest.fn(),
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -42,8 +49,10 @@ describe('AuthController', () => {
     it('should validate the AuthDto object using ZodValidationPipe', async () => {
       const mockCredentials: AuthDto = { email: 'test@email.com', password: 'testPassword' };
       const mockValidateUser = jest.spyOn(authService, 'validateUser').mockResolvedValue({ isValidPassword: true, user: mockCredentials });
+      const access_token = 'some-token';
+      mockAuthService.login.mockResolvedValue({ access_token });
 
-      await expect(authController.login(mockCredentials)).resolves.not.toThrow(UnauthorizedException);
+      await expect(authController.login(mockCredentials, mockResponse)).resolves.not.toThrow(UnauthorizedException);
       expect(mockValidateUser).toHaveBeenCalledWith(mockCredentials);
     });
 
@@ -51,7 +60,7 @@ describe('AuthController', () => {
       const mockCredentials: AuthDto = { email: 'invalid@email.com', password: 'invalidPassword' };
       const mockValidateUser = jest.spyOn(authService, 'validateUser').mockResolvedValue({ isValidPassword: false, user: null });
 
-      await expect(authController.login(mockCredentials)).rejects.toThrow(UnauthorizedException);
+      await expect(authController.login(mockCredentials, mockResponse)).rejects.toThrow(UnauthorizedException);
       expect(mockValidateUser).toHaveBeenCalledWith(mockCredentials);
     });
 
@@ -59,7 +68,7 @@ describe('AuthController', () => {
       const mockCredentials: AuthDto = { email: 'test@email.com', password: 'wrongPassword' };
       const mockValidateUser = jest.spyOn(authService, 'validateUser').mockResolvedValue({ isValidPassword: false, user: mockCredentials });
 
-      await expect(authController.login(mockCredentials)).rejects.toThrow(UnauthorizedException);
+      await expect(authController.login(mockCredentials, mockResponse)).rejects.toThrow(UnauthorizedException);
       expect(mockValidateUser).toHaveBeenCalledWith(mockCredentials);
     });
 
@@ -67,7 +76,7 @@ describe('AuthController', () => {
       const mockCredentials: AuthDto = { email: 'nonexistent@email.com', password: 'testPassword' };
       const mockValidateUser = jest.spyOn(authService, 'validateUser').mockResolvedValue({ isValidPassword: false, user: null });
 
-      await expect(authController.login(mockCredentials)).rejects.toThrow(UnauthorizedException);
+      await expect(authController.login(mockCredentials, mockResponse)).rejects.toThrow(UnauthorizedException);
       expect(mockValidateUser).toHaveBeenCalledWith(mockCredentials);
     });
 
@@ -75,7 +84,7 @@ describe('AuthController', () => {
       const mockCredentials: AuthDto = { email: 'test@email.com', password: 'testPassword' };
       const mockValidateUser = jest.spyOn(authService, 'validateUser').mockRejectedValue(new Error());
 
-      await expect(authController.login(mockCredentials)).rejects.toThrow(InternalServerErrorException);
+      await expect(authController.login(mockCredentials, mockResponse)).rejects.toThrow(InternalServerErrorException);
       expect(mockValidateUser).toHaveBeenCalledWith(mockCredentials);
     });
   });
