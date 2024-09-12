@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post('login')
   async login(@Body(new ZodValidationPipe(authDto)) credentials: AuthDto, @Res() res: Response) {
     try {
       const { isValidPassword, user } = await this.authService.validateUser(credentials)
@@ -35,6 +35,22 @@ export class AuthController {
       } else {
         throw new InternalServerErrorException('Erro interno do servidor, por favor tente novamente mais tarde');
       }
+    }
+  }
+  
+  @Post('logout')
+    logout(@Res() res: Response) {
+    try {
+      res.cookie('access_token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        maxAge: 0, // Cookie expiration time set to 0
+        sameSite: 'strict', // CSRF protection
+      });
+  
+      return res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+      throw new InternalServerErrorException('Erro interno do servidor, por favor tente novamente mais tarde');
     }
   }
 }

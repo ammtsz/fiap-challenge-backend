@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, BadRequestException, NotFoundException, UseGuards, Req } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { DuplicateRecordException } from '../../shared/filters/duplicate-record-exception.filter';
+import { AuthGuard } from '../../shared/guards/auth.guard';
 import { CreateUserDto, createUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto, updateUserDto } from '../dto/update-user.dto';
 import { ZodValidationPipe } from "../../shared/pipe/zod-validation.pipe";
@@ -26,6 +27,21 @@ export class UserController {
       ...user,
     });
     return 'Usuário criado com sucesso!'
+  }
+
+  @Get('logged')
+  @UseGuards(AuthGuard)
+  async getLoggedUserFromToken(@Req() request: Request) {
+    const user = request['user'];
+    if (user) {
+      return {
+        email: user.email,
+        username: user.username,
+        role: user.roles,
+      };
+    } else {
+      throw new NotFoundException()
+    }
   }
 
   @Get()
