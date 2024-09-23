@@ -19,6 +19,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.id',
         'post.title',
         'post.content',
+        'post.image',
         'post.date',
         'user.username',
       ])
@@ -33,6 +34,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.id',
         'post.title',
         'post.content',
+        'post.image',
         'post.date',
         'user.username',
       ])
@@ -48,6 +50,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.id',
         'post.title',
         'post.content',
+        'post.image',
         'post.date',
         'user.username',
       ])

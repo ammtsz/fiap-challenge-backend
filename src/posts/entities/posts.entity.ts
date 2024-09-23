@@ -19,6 +19,12 @@ export class Post implements IPost {
   content: string;
 
   @Column({
+    type: 'text',
+    nullable: true
+  })
+  image: string;
+
+  @Column({
     type: 'timestamp'
   })
   date: Date;

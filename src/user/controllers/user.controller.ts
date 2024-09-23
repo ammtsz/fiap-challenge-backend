@@ -38,6 +38,7 @@ export class UserController {
         email: user.email,
         username: user.username,
         role: user.roles,
+        id: user.sub,
       };
     } else {
       throw new NotFoundException()
