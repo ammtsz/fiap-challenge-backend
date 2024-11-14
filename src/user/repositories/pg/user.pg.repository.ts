@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "../../../user/dto/create-user.dto";
 import { UpdateUserDto } from "../../../user/dto/update-user.dto";
+import { Role } from "src/shared/enums/role.enum";
 
 export class UserPGRepository implements UserRepository {
   constructor(
@@ -13,6 +14,12 @@ export class UserPGRepository implements UserRepository {
 
   async getUser(email: string): Promise<IUser> {
     return this.userModel.findOne({ where: { email }})
+  }
+  async getUsers(): Promise<IUser[]> {
+    return this.userModel.find()
+  }
+  async getUsersByRole(role: Role): Promise<IUser[]> {
+    return this.userModel.findBy({role})
   }
   async createUser(user: CreateUserDto): Promise<void> {
     await this.userModel.save(user)

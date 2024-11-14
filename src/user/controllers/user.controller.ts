@@ -6,7 +6,9 @@ import { CreateUserDto, createUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto, updateUserDto } from '../dto/update-user.dto';
 import { ZodValidationPipe } from "../../shared/pipe/zod-validation.pipe";
 import { hashSync } from 'bcryptjs';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Role } from '../../shared/enums/role.enum';
+import { IUser } from '../entities/models/user.interface';
 
 @ApiTags('user')
 @Controller('user')
@@ -58,6 +60,25 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('users')
+  async getUsers(@Query('role') role: Role) {
+    let users: IUser[];
+    if (!role) {
+      users = await this.userService.getUsers();
+    } else {
+      users = await this.userService.getUsersByRole(role);
+    }
+    if (users) {
+      return users;
+    } else {
+      throw new NotFoundException()
+    }
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Patch()
   async update(
     @Query('email') email: string,
@@ -87,6 +108,8 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete()
   async remove(@Query('email') email: string) {
     if(!email) throw new BadRequestException('Especifique o e-mail do usuário.')
