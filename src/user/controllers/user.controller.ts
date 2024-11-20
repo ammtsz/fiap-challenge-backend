@@ -101,7 +101,9 @@ export class UserController {
         }  
       }
 
-      this.userService.update(email, updateUserDto);
+      const hashedPassword = updateUserDto.password ? {password: hashSync(updateUserDto.password, 8)} : {};
+
+      this.userService.update(email, {...updateUserDto, ...hashedPassword});
       return 'Usuário atualizado com sucesso!'
     } else {
       throw new NotFoundException()
