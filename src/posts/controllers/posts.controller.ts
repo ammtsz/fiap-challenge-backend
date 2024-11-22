@@ -52,6 +52,17 @@ export class PostsController {
     }
   }
 
+  @Get('user')
+  async findAllByUser(@Query('email') email: string) {
+    try {
+      const posts = await this.postsService.findAllByUser(email);
+      return posts;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+
   @Get('search')
   async filter(@Query('term') term: string) {
     try {

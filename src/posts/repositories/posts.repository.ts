@@ -5,6 +5,7 @@ import { IPost } from '../entities/models/posts.interface';
 export abstract class PostsRepository {
   abstract getPosts(): Promise<IPost[]>;
   abstract filterPosts(term: string): Promise<IPost[]>;
+  abstract filterPostsByUser(email: string): Promise<IPost[]>;
   abstract getPost(id: string): Promise<IPost>;
   abstract createPost(post: CreatePostDto): Promise<void>;
   abstract updatePost(id: string, post: UpdatePostDto): Promise<void>;

@@ -22,6 +22,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .getMany();
   }
@@ -37,8 +38,26 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .where('(post.title ILIKE :term OR post.content ILIKE :term)', { term: `%${term}%` })
+      .getMany();
+  }
+
+  async filterPostsByUser(email: string): Promise<IPost[]> {
+    return this.postsModel
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .select([
+        'post.id',
+        'post.title',
+        'post.content',
+        'post.image',
+        'post.date',
+        'user.username',
+        'user.email',
+      ])
+      .where('user.email ILIKE :email', { email })
       .getMany();
   }
 
@@ -53,6 +72,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .where('post.id = :id', { id })
       .getOne();
