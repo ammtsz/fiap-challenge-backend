@@ -22,6 +22,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .getMany();
   }
@@ -37,6 +38,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .where('(post.title ILIKE :term OR post.content ILIKE :term)', { term: `%${term}%` })
       .getMany();
@@ -70,6 +72,7 @@ export class PostsPGRepository implements PostsRepository {
         'post.image',
         'post.date',
         'user.username',
+        'user.email',
       ])
       .where('post.id = :id', { id })
       .getOne();
