@@ -11,6 +11,10 @@ export class PostsService {
   async findAll() {
     return this.postsRepository.getPosts();
   }
+
+  async findAllByUser(email: string) {
+    return this.postsRepository.filterPostsByUser(email);
+  }
   
   async filter(term: string) {
     return this.postsRepository.filterPosts(term);

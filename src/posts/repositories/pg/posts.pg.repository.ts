@@ -42,6 +42,23 @@ export class PostsPGRepository implements PostsRepository {
       .getMany();
   }
 
+  async filterPostsByUser(email: string): Promise<IPost[]> {
+    return this.postsModel
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .select([
+        'post.id',
+        'post.title',
+        'post.content',
+        'post.image',
+        'post.date',
+        'user.username',
+        'user.email',
+      ])
+      .where('user.email ILIKE :email', { email })
+      .getMany();
+  }
+
   async getPost(id: string): Promise<IPost> {
     return this.postsModel
       .createQueryBuilder('post')
